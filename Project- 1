@@ -1,0 +1,59 @@
+#Library Files
+library(readxl)	  		//To read and import excel data.
+library(tidyverse)		// Data Manipulation
+library(cluster)			// Clustering	
+library(factoextra)		// Clustering and Visualization
+library(ggplot2)			// Graphical representation of cluster
+library(gridExtra)		// Visualization
+library(plotrix)			// Bar chart and Pie chart
+# Importing Dataset
+acc<- read_excel("Accident data set.xlsx")
+#Viewing dataset
+View(acc)
+# To view sample values in the dataset
+head(acc)
+#Graphical representation of Data
+ggplot(acc, aes(Weather,Reason,color=Location)) + geom_point()
+# For static partitioning
+set.seed(20)
+# Clustering
+cluster <- kmeans(acc[, 3:10], 5, nstart = 20)
+cluster
+#Clustered data
+cluster$cluster<- as.factor(cluster$cluster)
+# Graphical Representation of Clustered data
+ggplot(acc, aes(Weather,Reason, color = cluster$cluster)) + geom_point()
+cluster<- data.frame(cluster$cluster)
+#Viewing of Clustered data
+view(cluster)
+table(cluster$cluster, acc$Location)
+#Updating the data set
+acc<-mutate(acc,cluster=cluster$cluster)
+view(acc)
+# Viewing data in clusters
+cluster_1<-subset(acc,acc$cluster==1)
+view(cluster_1)
+cluster_2<-subset(acc,acc$cluster==2)
+view(cluster_2)
+cluster_3<-subset(acc,acc$cluster==3)
+view(cluster_3)
+cluster_4<-subset(acc,acc$cluster==4)
+view(cluster_4)
+cluster_5<-subset(acc,acc$cluster==5)
+view(cluster_5)
+#Bar chart for weather
+weather1=cluster_1$Weather
+table(cluster_1$Weather)
+hist(weather1,breaks=5,main="WEATHER",col=c("red","green","yellow","blue"))
+#Testing
+set.seed(2314)
+partition<-sample(2,nrow(thalaipu),replace = TRUE,prob = c(0.8,0.2))
+train1<-thalaipu[partition==1,]
+test1<-thalaipu[partition==2,]
+x<-thalaipu$Reason
+#Pie chart for Reasons
+res<-c(10,14,23,14,14,1,0,4,8)
+lable<-c("TURNING","HIGHSPEED","DRUNK AND DRIVE","SPEEDBREAKER","FAILURE OF BREAKS","VIOLATION OF TRAFFIC RULES","INEXPERIENCE IN DRIVING","DISTRACTED DRIVING")
+pie(res, labels = lable, main = "REASON FOR ACCIDENT", col = rainbow(length(x)))
+pie(res,lable,main="REASON FOR ACCIDENT",col = rainbow(length(7)),)
+
